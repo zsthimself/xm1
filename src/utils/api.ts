@@ -12,16 +12,16 @@ export async function fetchWithRetry(
     
     // 如果响应不成功，抛出错误
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({}));
       throw new APIError(
-        error.message || '请求失败',
+        errorData.message || '请求失败',
         response.status,
-        error.code
+        errorData.code
       );
     }
     
     return response;
-  } catch (error) {
+  } catch (error: unknown) {
     // 如果还有重试次数且错误类型适合重试，则进行重试
     if (retries > 0 && shouldRetry(error)) {
       // 计算延迟时间，使用指数退避策略
@@ -35,7 +35,7 @@ export async function fetchWithRetry(
 }
 
 // 判断是否应该重试的函数
-function shouldRetry(error: any): boolean {
+function shouldRetry(error: unknown): boolean {
   if (error instanceof APIError) {
     // 对于限流(429)和服务器错误(5xx)进行重试
     return error.status === 429 || (error.status ?? 0) >= 500;

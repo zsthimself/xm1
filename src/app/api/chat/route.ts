@@ -1,13 +1,13 @@
 import { API_CONFIG, APIError } from '@/config/api';
 import { NextResponse } from 'next/server';
-import { ChatMessage } from '@/types/chat';
+import type { ChatMessage } from '@/types/chat';
 import { fetchWithRetry } from '@/utils/api';
 
 // Next.js API 路由处理函数
 export async function POST(request: Request) {
   try {
     // 解析请求体中的消息数据
-    const { messages } = await request.json();
+    const { messages }: { messages: ChatMessage[] } = await request.json();
 
     // 检查 API 密钥是否配置
     if (!API_CONFIG.API_KEY) {
